@@ -1,0 +1,28 @@
+Request
+RequestPayload-> PARAMS-> ENTITY(usecase)-> ENTRY-> db Persist
+
+ 
+
+
+Response
+ENTRY->ENTITY->DTO->Response
+
+ 
+
+
+LEVELS:
+                   Request                  Response
+                   ---------------------------------------
+1) Presentation :  PARAMS                  | DTO
+2) UseCase      :  ENTITY                  | 
+3) Services     :  ctx,valueObjects,ENTITY | ENTITY
+4)
+
+ 
+
+ 
+
+Calls
+P <-> D/u <-> U <-> D/S <-> Infra/mysql   <-> DB
+
+
