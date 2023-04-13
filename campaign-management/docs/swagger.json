@@ -1,0 +1,1147 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/campaigns": {
+            "get": {
+                "description": "API to get details of all campaigns",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign"
+                ],
+                "summary": "Get list of all campaigns",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page Number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort Type [created_at asc/created_at desc]",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Campaign Name",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Campaign Status [InActive/Active/Scheduled]",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CampaignListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "API to create new campaign",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign"
+                ],
+                "summary": "Create a campaign",
+                "parameters": [
+                    {
+                        "description": "Add campaign details",
+                        "name": "campaign",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/params.CampaignCreationForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CampaignDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/campaigns/products": {
+            "post": {
+                "description": "API to create new campaign products",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign products"
+                ],
+                "summary": "Create a campaign products",
+                "parameters": [
+                    {
+                        "description": "Add campaign products details",
+                        "name": "campaign",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/params.CampaignProductCreationForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.CampaignProducts"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/campaigns/update-status": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "API to update the status of campaign",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign"
+                ],
+                "summary": "Update status of campaign",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/campaigns/{campaign_id}/products": {
+            "delete": {
+                "description": "API to delete all products under a specified campaign",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign products"
+                ],
+                "summary": "Delete particular campaign products",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Campaign ID",
+                        "name": "campaign_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/campaigns/{campaign_id}/products/{id}": {
+            "delete": {
+                "description": "API to delete particular product under a specified campaign",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign products"
+                ],
+                "summary": "Delete particular campaign product by product id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Campaign ID",
+                        "name": "campaign_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/campaigns/{campaign_id}/stores": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "API to insert new stores under given campaign id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign stores"
+                ],
+                "summary": "add stores for specific campaign",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Campaign ID",
+                        "name": "campaign_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Store Details",
+                        "name": "stores",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/params.CampaignStoresForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CampaignStoresDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "API to delete all stores under specified campaign",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign stores"
+                ],
+                "summary": "Delete all stores under partilcular campaign",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Campaign ID",
+                        "name": "campaign_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/campaigns/{campaign_id}/stores/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "API to delete particular store under specified campaign",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign stores"
+                ],
+                "summary": "Delete specified store with given store id under partilcular campaign",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Campaign ID",
+                        "name": "campaign_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Campaign Store ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/campaigns/{id}": {
+            "get": {
+                "description": "API to get details of particular campaign",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign"
+                ],
+                "summary": "Get campaign details by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Campaign ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Omit Products",
+                        "name": "omit_products",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Omit Stores",
+                        "name": "omit_stores",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CampaignResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "API to update an existing campaign",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign"
+                ],
+                "summary": "Update campaign details",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Campaign ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "campaign details",
+                        "name": "campaign",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/params.CampaignUpdateForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.CampaignDTO": {
+            "type": "object",
+            "properties": {
+                "campaign_products": {
+                    "description": "Product Details.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CampaignProducts"
+                    }
+                },
+                "campaign_status_code": {
+                    "description": "Campaign Status",
+                    "type": "integer"
+                },
+                "campaign_stores": {
+                    "description": "Stores Details.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CampaignStores"
+                    }
+                },
+                "campaign_title": {
+                    "description": "Campaign Title",
+                    "type": "string"
+                },
+                "campaign_type": {
+                    "description": "Campaign Type",
+                    "type": "string"
+                },
+                "collection_end_date": {
+                    "description": "Campaign collection end date",
+                    "type": "string"
+                },
+                "collection_start_date": {
+                    "description": "Campaign collection start date",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Campaign identifier",
+                    "type": "integer"
+                },
+                "is_campaign_published": {
+                    "description": "Is campaign published flag",
+                    "type": "boolean"
+                },
+                "landing_image_path": {
+                    "description": "Campaign landing screen image path",
+                    "type": "string"
+                },
+                "lead_time": {
+                    "description": "Campaign lead time in days",
+                    "type": "integer"
+                },
+                "listing_description": {
+                    "description": "Campaign listing screen description",
+                    "type": "string"
+                },
+                "listing_image_path": {
+                    "description": "Campaign listing screen image path",
+                    "type": "string"
+                },
+                "listing_title": {
+                    "description": "Campaign listing screen title",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Campaign Name",
+                    "type": "string"
+                },
+                "offer_id": {
+                    "description": "Offer Identifier",
+                    "type": "integer"
+                },
+                "onboard_image_path": {
+                    "description": "Campaign onboarding screen image path",
+                    "type": "string"
+                },
+                "onboarding_description": {
+                    "description": "Campaign obboarding screen description",
+                    "type": "string"
+                },
+                "onboarding_title": {
+                    "description": "Campaign onboarding screen title",
+                    "type": "string"
+                },
+                "order_end_date": {
+                    "description": "Campaign order end date",
+                    "type": "string"
+                },
+                "order_start_date": {
+                    "description": "Campaign order start date",
+                    "type": "string"
+                },
+                "tag_id": {
+                    "description": "Tag Identifier",
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.CampaignListResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/dto.DataList"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CampaignProducts": {
+            "type": "object",
+            "properties": {
+                "campaign_product_id": {
+                    "type": "integer"
+                },
+                "product_id": {
+                    "type": "integer"
+                },
+                "product_type": {
+                    "type": "string"
+                },
+                "sequence_no": {
+                    "type": "integer"
+                },
+                "serial_no": {
+                    "type": "integer"
+                },
+                "sku_no": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.CampaignResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/dto.CampaignDTO"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CampaignStores": {
+            "type": "object",
+            "properties": {
+                "campaign_store_id": {
+                    "type": "integer"
+                },
+                "store_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.CampaignStoresDTO": {
+            "type": "object",
+            "properties": {
+                "campaign_id": {
+                    "type": "integer"
+                },
+                "stores": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CampaignStores"
+                    }
+                }
+            }
+        },
+        "dto.DataList": {
+            "type": "object",
+            "properties": {
+                "campaigns": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CampaignDTO"
+                    }
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "params.CampaignCreationForm": {
+            "type": "object",
+            "required": [
+                "title"
+            ],
+            "properties": {
+                "campaign_status_code": {
+                    "description": "Campaign Status code",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                "campaign_type": {
+                    "description": "Campaign Type",
+                    "type": "string",
+                    "enum": [
+                        "deli",
+                        "cash\u0026carry"
+                    ]
+                },
+                "collection_end_date": {
+                    "description": "Collection end date",
+                    "type": "string",
+                    "example": "2023-12-31 12:00:00"
+                },
+                "collection_start_date": {
+                    "description": "Collection start date",
+                    "type": "string",
+                    "example": "2023-12-31 12:00:00"
+                },
+                "is_campaign_published": {
+                    "description": "Is campaign published flag",
+                    "type": "boolean"
+                },
+                "landing_image_path": {
+                    "description": "Landing screen image path",
+                    "type": "string"
+                },
+                "lead_time": {
+                    "description": "Lead time in days",
+                    "type": "integer"
+                },
+                "listing_description": {
+                    "description": "Listing screen description",
+                    "type": "string"
+                },
+                "listing_image_path": {
+                    "description": "Listing screen image path",
+                    "type": "string"
+                },
+                "listing_title": {
+                    "description": "Listing screen title",
+                    "type": "string"
+                },
+                "offer_id": {
+                    "description": "Offer Id",
+                    "type": "integer"
+                },
+                "onboarding_description": {
+                    "description": "Onboarding Description",
+                    "type": "string"
+                },
+                "onboarding_image_path": {
+                    "description": "Onboarding image path",
+                    "type": "string"
+                },
+                "onboarding_title": {
+                    "description": "Onboarding title",
+                    "type": "string"
+                },
+                "order_end_date": {
+                    "description": "Order end date",
+                    "type": "string",
+                    "example": "2023-12-31 12:00:00"
+                },
+                "order_start_date": {
+                    "description": "Order start date",
+                    "type": "string",
+                    "example": "2023-12-31 12:00:00"
+                },
+                "products": {
+                    "description": "List of campaign products",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/params.CampaignProduct"
+                    }
+                },
+                "stores": {
+                    "description": "List of campaign stores",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "tag_id": {
+                    "description": "Tag Id",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "Campaign Title",
+                    "type": "string"
+                }
+            }
+        },
+        "params.CampaignProduct": {
+            "type": "object",
+            "required": [
+                "product_id"
+            ],
+            "properties": {
+                "SKU_no": {
+                    "type": "integer"
+                },
+                "product_id": {
+                    "type": "integer"
+                },
+                "product_type": {
+                    "type": "string",
+                    "enum": [
+                        "cd",
+                        "ncd"
+                    ]
+                },
+                "sequence_no": {
+                    "type": "integer"
+                },
+                "serial_no": {
+                    "type": "integer"
+                }
+            }
+        },
+        "params.CampaignProductCreationForm": {
+            "type": "object",
+            "required": [
+                "campaign_id",
+                "created_by",
+                "products"
+            ],
+            "properties": {
+                "campaign_id": {
+                    "description": "campaign Id",
+                    "type": "integer"
+                },
+                "created_by": {
+                    "description": "Created by user id",
+                    "type": "integer"
+                },
+                "products": {
+                    "description": "List of campaign products",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/params.CampaignProduct"
+                    }
+                }
+            }
+        },
+        "params.CampaignStoresForm": {
+            "type": "object",
+            "required": [
+                "stores"
+            ],
+            "properties": {
+                "stores": {
+                    "description": "List of campaign stores",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "params.CampaignUpdateForm": {
+            "type": "object",
+            "properties": {
+                "campaign_status_code": {
+                    "description": "Campaign Status code",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                "campaign_type": {
+                    "description": "Campaign Type",
+                    "type": "string",
+                    "enum": [
+                        "deli",
+                        "cash\u0026carry"
+                    ]
+                },
+                "collection_end_date": {
+                    "description": "Collection end date",
+                    "type": "string",
+                    "example": "2023-12-31 12:00:00"
+                },
+                "collection_start_date": {
+                    "description": "Collection start date",
+                    "type": "string",
+                    "example": "2023-12-31 12:00:00"
+                },
+                "is_campaign_published": {
+                    "description": "Is campaign published flag",
+                    "type": "boolean"
+                },
+                "landing_image_path": {
+                    "description": "Landing screen image path",
+                    "type": "string"
+                },
+                "lead_time": {
+                    "description": "Lead time in days",
+                    "type": "integer"
+                },
+                "listing_description": {
+                    "description": "Listing screen description",
+                    "type": "string"
+                },
+                "listing_image_path": {
+                    "description": "Listing screen image path",
+                    "type": "string"
+                },
+                "listing_title": {
+                    "description": "Listing screen title",
+                    "type": "string"
+                },
+                "offer_id": {
+                    "description": "Offer Id",
+                    "type": "integer"
+                },
+                "onboarding_description": {
+                    "description": "Onboarding Description",
+                    "type": "string"
+                },
+                "onboarding_image_path": {
+                    "description": "Onboarding image path",
+                    "type": "string"
+                },
+                "onboarding_title": {
+                    "description": "Onboarding title",
+                    "type": "string"
+                },
+                "order_end_date": {
+                    "description": "Order end date",
+                    "type": "string",
+                    "example": "2023-12-31 12:00:00"
+                },
+                "order_start_date": {
+                    "description": "Order start date",
+                    "type": "string",
+                    "example": "2023-12-31 12:00:00"
+                },
+                "products": {
+                    "description": "List of campaign products",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/params.UpdateCampaignProduct"
+                    }
+                },
+                "stores": {
+                    "description": "List of campaign stores",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "tag_id": {
+                    "description": "Tag Id",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "Campaign Title",
+                    "type": "string"
+                }
+            }
+        },
+        "params.UpdateCampaignProduct": {
+            "type": "object",
+            "properties": {
+                "SKU_no": {
+                    "type": "integer"
+                },
+                "campaign_product_id": {
+                    "type": "integer"
+                },
+                "product_id": {
+                    "type": "integer"
+                },
+                "product_type": {
+                    "type": "string",
+                    "enum": [
+                        "cd",
+                        "ncd"
+                    ]
+                },
+                "sequence_no": {
+                    "type": "integer"
+                },
+                "serial_no": {
+                    "type": "integer"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "description": "This is a Campaign Management Server, Which provides set of APIs to create and manage campaigns, for adding products and stores against particular campaign and also APIs for time slot management.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

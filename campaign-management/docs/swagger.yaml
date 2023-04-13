@@ -1,0 +1,778 @@
+definitions:
+  dto.CampaignDTO:
+    properties:
+      campaign_products:
+        description: Product Details.
+        items:
+          $ref: '#/definitions/dto.CampaignProducts'
+        type: array
+      campaign_status_code:
+        description: Campaign Status
+        type: integer
+      campaign_stores:
+        description: Stores Details.
+        items:
+          $ref: '#/definitions/dto.CampaignStores'
+        type: array
+      campaign_title:
+        description: Campaign Title
+        type: string
+      campaign_type:
+        description: Campaign Type
+        type: string
+      collection_end_date:
+        description: Campaign collection end date
+        type: string
+      collection_start_date:
+        description: Campaign collection start date
+        type: string
+      id:
+        description: Campaign identifier
+        type: integer
+      is_campaign_published:
+        description: Is campaign published flag
+        type: boolean
+      landing_image_path:
+        description: Campaign landing screen image path
+        type: string
+      lead_time:
+        description: Campaign lead time in days
+        type: integer
+      listing_description:
+        description: Campaign listing screen description
+        type: string
+      listing_image_path:
+        description: Campaign listing screen image path
+        type: string
+      listing_title:
+        description: Campaign listing screen title
+        type: string
+      name:
+        description: Campaign Name
+        type: string
+      offer_id:
+        description: Offer Identifier
+        type: integer
+      onboard_image_path:
+        description: Campaign onboarding screen image path
+        type: string
+      onboarding_description:
+        description: Campaign obboarding screen description
+        type: string
+      onboarding_title:
+        description: Campaign onboarding screen title
+        type: string
+      order_end_date:
+        description: Campaign order end date
+        type: string
+      order_start_date:
+        description: Campaign order start date
+        type: string
+      tag_id:
+        description: Tag Identifier
+        type: integer
+    type: object
+  dto.CampaignListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/dto.DataList'
+      status:
+        type: string
+    type: object
+  dto.CampaignProducts:
+    properties:
+      campaign_product_id:
+        type: integer
+      product_id:
+        type: integer
+      product_type:
+        type: string
+      sequence_no:
+        type: integer
+      serial_no:
+        type: integer
+      sku_no:
+        type: integer
+    type: object
+  dto.CampaignResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/dto.CampaignDTO'
+      status:
+        type: string
+    type: object
+  dto.CampaignStores:
+    properties:
+      campaign_store_id:
+        type: integer
+      store_id:
+        type: integer
+    type: object
+  dto.CampaignStoresDTO:
+    properties:
+      campaign_id:
+        type: integer
+      stores:
+        items:
+          $ref: '#/definitions/dto.CampaignStores'
+        type: array
+    type: object
+  dto.DataList:
+    properties:
+      campaigns:
+        items:
+          $ref: '#/definitions/dto.CampaignDTO'
+        type: array
+      count:
+        type: integer
+      limit:
+        type: integer
+      offset:
+        type: integer
+    type: object
+  dto.Response:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  params.CampaignCreationForm:
+    properties:
+      campaign_status_code:
+        description: Campaign Status code
+        enum:
+        - 1
+        - 2
+        - 3
+        type: integer
+      campaign_type:
+        description: Campaign Type
+        enum:
+        - deli
+        - cash&carry
+        type: string
+      collection_end_date:
+        description: Collection end date
+        example: "2023-12-31 12:00:00"
+        type: string
+      collection_start_date:
+        description: Collection start date
+        example: "2023-12-31 12:00:00"
+        type: string
+      is_campaign_published:
+        description: Is campaign published flag
+        type: boolean
+      landing_image_path:
+        description: Landing screen image path
+        type: string
+      lead_time:
+        description: Lead time in days
+        type: integer
+      listing_description:
+        description: Listing screen description
+        type: string
+      listing_image_path:
+        description: Listing screen image path
+        type: string
+      listing_title:
+        description: Listing screen title
+        type: string
+      offer_id:
+        description: Offer Id
+        type: integer
+      onboarding_description:
+        description: Onboarding Description
+        type: string
+      onboarding_image_path:
+        description: Onboarding image path
+        type: string
+      onboarding_title:
+        description: Onboarding title
+        type: string
+      order_end_date:
+        description: Order end date
+        example: "2023-12-31 12:00:00"
+        type: string
+      order_start_date:
+        description: Order start date
+        example: "2023-12-31 12:00:00"
+        type: string
+      products:
+        description: List of campaign products
+        items:
+          $ref: '#/definitions/params.CampaignProduct'
+        type: array
+      stores:
+        description: List of campaign stores
+        items:
+          type: integer
+        type: array
+      tag_id:
+        description: Tag Id
+        type: integer
+      title:
+        description: Campaign Title
+        type: string
+    required:
+    - title
+    type: object
+  params.CampaignProduct:
+    properties:
+      SKU_no:
+        type: integer
+      product_id:
+        type: integer
+      product_type:
+        enum:
+        - cd
+        - ncd
+        type: string
+      sequence_no:
+        type: integer
+      serial_no:
+        type: integer
+    required:
+    - product_id
+    type: object
+  params.CampaignProductCreationForm:
+    properties:
+      campaign_id:
+        description: campaign Id
+        type: integer
+      created_by:
+        description: Created by user id
+        type: integer
+      products:
+        description: List of campaign products
+        items:
+          $ref: '#/definitions/params.CampaignProduct'
+        type: array
+    required:
+    - campaign_id
+    - created_by
+    - products
+    type: object
+  params.CampaignStoresForm:
+    properties:
+      stores:
+        description: List of campaign stores
+        items:
+          type: integer
+        type: array
+    required:
+    - stores
+    type: object
+  params.CampaignUpdateForm:
+    properties:
+      campaign_status_code:
+        description: Campaign Status code
+        enum:
+        - 1
+        - 2
+        - 3
+        type: integer
+      campaign_type:
+        description: Campaign Type
+        enum:
+        - deli
+        - cash&carry
+        type: string
+      collection_end_date:
+        description: Collection end date
+        example: "2023-12-31 12:00:00"
+        type: string
+      collection_start_date:
+        description: Collection start date
+        example: "2023-12-31 12:00:00"
+        type: string
+      is_campaign_published:
+        description: Is campaign published flag
+        type: boolean
+      landing_image_path:
+        description: Landing screen image path
+        type: string
+      lead_time:
+        description: Lead time in days
+        type: integer
+      listing_description:
+        description: Listing screen description
+        type: string
+      listing_image_path:
+        description: Listing screen image path
+        type: string
+      listing_title:
+        description: Listing screen title
+        type: string
+      offer_id:
+        description: Offer Id
+        type: integer
+      onboarding_description:
+        description: Onboarding Description
+        type: string
+      onboarding_image_path:
+        description: Onboarding image path
+        type: string
+      onboarding_title:
+        description: Onboarding title
+        type: string
+      order_end_date:
+        description: Order end date
+        example: "2023-12-31 12:00:00"
+        type: string
+      order_start_date:
+        description: Order start date
+        example: "2023-12-31 12:00:00"
+        type: string
+      products:
+        description: List of campaign products
+        items:
+          $ref: '#/definitions/params.UpdateCampaignProduct'
+        type: array
+      stores:
+        description: List of campaign stores
+        items:
+          type: integer
+        type: array
+      tag_id:
+        description: Tag Id
+        type: integer
+      title:
+        description: Campaign Title
+        type: string
+    type: object
+  params.UpdateCampaignProduct:
+    properties:
+      SKU_no:
+        type: integer
+      campaign_product_id:
+        type: integer
+      product_id:
+        type: integer
+      product_type:
+        enum:
+        - cd
+        - ncd
+        type: string
+      sequence_no:
+        type: integer
+      serial_no:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /campaigns:
+    get:
+      description: API to get details of all campaigns
+      parameters:
+      - description: Page Number
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Sort Type [created_at asc/created_at desc]
+        in: query
+        name: sort
+        type: string
+      - description: Campaign Name
+        in: query
+        name: name
+        type: string
+      - description: Campaign Status [InActive/Active/Scheduled]
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CampaignListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Get list of all campaigns
+      tags:
+      - campaign
+    post:
+      consumes:
+      - application/json
+      description: API to create new campaign
+      parameters:
+      - description: Add campaign details
+        in: body
+        name: campaign
+        required: true
+        schema:
+          $ref: '#/definitions/params.CampaignCreationForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CampaignDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a campaign
+      tags:
+      - campaign
+  /campaigns/{campaign_id}/products:
+    delete:
+      description: API to delete all products under a specified campaign
+      parameters:
+      - description: Campaign ID
+        in: path
+        name: campaign_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Delete particular campaign products
+      tags:
+      - campaign products
+  /campaigns/{campaign_id}/products/{id}:
+    delete:
+      description: API to delete particular product under a specified campaign
+      parameters:
+      - description: Campaign ID
+        in: path
+        name: campaign_id
+        required: true
+        type: integer
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Delete particular campaign product by product id
+      tags:
+      - campaign products
+  /campaigns/{campaign_id}/stores:
+    delete:
+      description: API to delete all stores under specified campaign
+      parameters:
+      - description: Campaign ID
+        in: path
+        name: campaign_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete all stores under partilcular campaign
+      tags:
+      - campaign stores
+    post:
+      consumes:
+      - application/json
+      description: API to insert new stores under given campaign id
+      parameters:
+      - description: Campaign ID
+        in: path
+        name: campaign_id
+        required: true
+        type: integer
+      - description: Store Details
+        in: body
+        name: stores
+        required: true
+        schema:
+          $ref: '#/definitions/params.CampaignStoresForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CampaignStoresDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: add stores for specific campaign
+      tags:
+      - campaign stores
+  /campaigns/{campaign_id}/stores/{id}:
+    delete:
+      description: API to delete particular store under specified campaign
+      parameters:
+      - description: Campaign ID
+        in: path
+        name: campaign_id
+        required: true
+        type: integer
+      - description: Campaign Store ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete specified store with given store id under partilcular campaign
+      tags:
+      - campaign stores
+  /campaigns/{id}:
+    get:
+      description: API to get details of particular campaign
+      parameters:
+      - description: Campaign ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Omit Products
+        in: query
+        name: omit_products
+        type: boolean
+      - description: Omit Stores
+        in: query
+        name: omit_stores
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CampaignResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Get campaign details by id
+      tags:
+      - campaign
+    put:
+      consumes:
+      - application/json
+      description: API to update an existing campaign
+      parameters:
+      - description: Campaign ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: campaign details
+        in: body
+        name: campaign
+        required: true
+        schema:
+          $ref: '#/definitions/params.CampaignUpdateForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Update campaign details
+      tags:
+      - campaign
+  /campaigns/products:
+    post:
+      consumes:
+      - application/json
+      description: API to create new campaign products
+      parameters:
+      - description: Add campaign products details
+        in: body
+        name: campaign
+        required: true
+        schema:
+          $ref: '#/definitions/params.CampaignProductCreationForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.CampaignProducts'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Create a campaign products
+      tags:
+      - campaign products
+  /campaigns/update-status:
+    put:
+      description: API to update the status of campaign
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Update status of campaign
+      tags:
+      - campaign
+securityDefinitions:
+  ApiKeyAuth:
+    description: This is a Campaign Management Server, Which provides set of APIs
+      to create and manage campaigns, for adding products and stores against particular
+      campaign and also APIs for time slot management.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -1,0 +1,267 @@
+image:
+  name: docker.nedigital.sg/tech-infra/build-tools:0.3.0
+  username: $NEXUS_USERNAME
+  password: $NEXUS_PASSWORD
+
+definitions:
+  steps:
+    - step: &clone-pipeline-files
+        name: Clone pipeline files
+        image: atlassian/default-image:2
+        script:
+          - echo -e $GOLDEN_PIPELINES_SSH_KEY > ~/.ssh/golden_pipelines_ssh_key && chmod 400 ~/.ssh/golden_pipelines_ssh_key
+          - GIT_SSH_COMMAND='ssh -i ~/.ssh/golden_pipelines_ssh_key' git clone -b v1 --depth 1 git@bitbucket.org:ntuclink/sre-golden-pipeline.git /tmp/sre-golden-pipeline
+          - mv /tmp/sre-golden-pipeline/Makefile $BITBUCKET_CLONE_DIR/Makefile.infra
+        artifacts:
+          - Makefile.infra
+
+    - step: &build-and-push-docker-image-preprod
+        name: Build and push docker image for preprod
+        deployment: Preprod
+        image: google/cloud-sdk:latest
+        script:
+          - export COMMIT_ID=$BITBUCKET_COMMIT
+          - export timeTag=$(TZ=Asia/Singapore date +%Y%m%d%H%M)
+          - export IMAGE_TAG=asia.gcr.io/ne-shared-services/$APP_NAME:${timeTag}-${COMMIT_ID}
+          # Step to build the docker file.
+          - docker build --build-arg CLIENT_CERT=$CLIENT_CERT --build-arg CLIENT_KEY=$CLIENT_KEY --build-arg SERVER_CA=$SERVER_CA -t ${IMAGE_TAG} -f Dockerfile .
+          - echo -E $GOOGLE_CREDENTIALS > ~/.gcr_keyfile_ne.json
+          # Logging the NE google account to upload docker image
+          - gcloud auth activate-service-account --key-file
+            ~/.gcr_keyfile_ne.json
+          - gcloud auth configure-docker
+          # Pushing the docker image to google registry.
+          - docker push ${IMAGE_TAG}
+          - echo $IMAGE_TAG > docker-image.txt
+        artifacts:
+          # Created a artifact from IMAGE name so that we can use it easily in next steps
+          - docker-image.txt
+        services:
+          - docker
+
+    - step: &build-and-push-docker-image-prod
+        name: Build and push docker image for production
+        deployment: Production
+        image: google/cloud-sdk:latest
+        script:
+          - export COMMIT_ID=$BITBUCKET_COMMIT
+          - export timeTag=$(TZ=Asia/Singapore date +%Y%m%d%H%M)
+          - export IMAGE_TAG=asia.gcr.io/ne-shared-services/$APP_NAME:${timeTag}-${COMMIT_ID}
+          # Step to build the docker file.
+          - docker build --build-arg CLIENT_CERT=$CLIENT_CERT --build-arg CLIENT_KEY=$CLIENT_KEY --build-arg SERVER_CA=$SERVER_CA -t ${IMAGE_TAG} -f Dockerfile .
+          - echo -E $GOOGLE_CREDENTIALS > ~/.gcr_keyfile_ne.json
+          # Logging the NE google account to upload docker image
+          - gcloud auth activate-service-account --key-file
+            ~/.gcr_keyfile_ne.json
+          - gcloud auth configure-docker
+          # Pushing the docker image to google registry.
+          - docker push ${IMAGE_TAG}
+          - echo $IMAGE_TAG > docker-image.txt
+        artifacts:
+          # Created a artifact from IMAGE name so that we can use it easily in next steps
+          - docker-image.txt
+        services:
+          - docker
+
+    - step: &deploy-to-cloud-run-preprod
+        name: Deploy to Cloud Run in Grocery Preprod
+        image:
+          name: docker.nedigital.sg/tech-infra/build-tools:0.3.0
+          username: $NEXUS_USERNAME
+          password: $NEXUS_PASSWORD
+        script:
+          - export $(grep -v '^#' app.env | xargs)
+          - export $(grep -v '^#' preprod.env | xargs)
+          - export IMAGE=$(cat docker-image.txt)
+          - export CLOUD_RUN_IMAGE=$IMAGE
+          - make -f Makefile.infra deploy-cloud-run
+        services:
+          - docker
+
+    - step: &deploy-to-cloud-run-prod
+        name: Deploy to Cloud Run in Grocery Production
+        image:
+          name: docker.nedigital.sg/tech-infra/build-tools:0.3.0
+          username: $NEXUS_USERNAME
+          password: $NEXUS_PASSWORD
+        script:
+          - export $(grep -v '^#' app.env | xargs)
+          - export $(grep -v '^#' prod.env | xargs)
+          - export IMAGE=$(cat docker-image.txt)
+          - export CLOUD_RUN_IMAGE=$IMAGE
+          - make -f Makefile.infra deploy-cloud-run
+        services:
+          - docker
+
+    - step: &run-unit-tests
+        name: Run unit tests
+        image: golang:1.18
+        caches:
+          - go
+        script:
+          - git config --global url."https://${BITBUCKET_CREDENTIAL}@bitbucket.org/".insteadOf "https://bitbucket.org/"
+          - go mod download
+          - go install gotest.tools/gotestsum@latest
+          - gotestsum --junitfile test-reports/unit-tests.xml --jsonfile test-reports/report.json -- -coverprofile=test-reports/coverage.out ./...
+        artifacts:
+          - test-reports/**
+
+    - step: &scan-nonstrict
+        name: Run Static Code Analysis
+        image:
+          name: asia.gcr.io/ne-shared-services/ne-scanner:latest
+          username: _json_key
+          password: "$GOOGLE_CREDENTIALS"
+        caches:
+          - sonar
+        script:
+          - apk update && apk add git
+          - export VERSION=$(git log -1 --pretty=%h)
+          - export AUTHOR=$(git log -1 --pretty=%an)
+          - export TITLE=$(git log --format=%s%b -n 1)
+          - export REPO=$(git config  --get remote.origin.url)
+          - cd /ns
+          - make init DEFAULT_DIR=${BITBUCKET_CLONE_DIR}
+          - make scan ARGS="--projectVersion=${VERSION} --login=${SONARCLOUD_TOKEN} --url=${SONARCLOUD_URL} --debug"
+
+    - step: &scan-strict
+        name: Run Static Code Analysis
+        image:
+          name: asia.gcr.io/ne-shared-services/ne-scanner:latest
+          username: _json_key
+          password: "$GOOGLE_CREDENTIALS"
+        caches:
+          - sonar
+        script:
+          - apk update && apk add git
+          - export VERSION=$(git log -1 --pretty=%h)
+          - export AUTHOR=$(git log -1 --pretty=%an)
+          - export TITLE=$(git log --format=%s%b -n 1)
+          - export REPO=$(git config  --get remote.origin.url)
+          - cd /ns
+          - make init DEFAULT_DIR=${BITBUCKET_CLONE_DIR}
+          - make scan ARGS="--projectVersion=${VERSION} --login=${SONARCLOUD_TOKEN} --url=${SONARCLOUD_URL} --debug --strict"
+
+    - step: &deploy-cloud-scheduler-job
+        script:
+          - make -f Makefile.infra create-or-update-cloud-scheduler-job
+        services:
+          - docker
+        caches:
+          - docker
+
+    - step: &pause-cloud-scheduler-job
+        script:
+          - make -f Makefile.infra pause-cloud-scheduler-job
+        services:
+          - docker
+        caches:
+          - docker
+
+    - step: &resume-cloud-scheduler-job
+        script:
+          - make -f Makefile.infra resume-cloud-scheduler-job
+        services:
+          - docker
+        caches:
+          - docker
+
+    - step: &run-cloud-scheduler-job
+        script:
+          - make -f Makefile.infra run-cloud-scheduler-job
+        services:
+          - docker
+        caches:
+          - docker
+
+  caches:
+    go: /go/pkg/mod
+    sonar: ~/.sonar/cache
+
+pipelines:
+  default:
+    - step: *run-unit-tests
+    - step: *scan-strict
+
+  pull-requests:
+    "**":
+      - step: *run-unit-tests
+      - step: *scan-strict
+
+  branches:
+    development:
+      - step: *run-unit-tests
+      - step: *clone-pipeline-files
+      - step: *scan-nonstrict
+      - step: *build-and-push-docker-image-preprod
+      - step:
+          <<: *deploy-to-cloud-run-preprod
+          name: Deploy to preprod
+          trigger: manual
+
+    '{master,release/**}':
+      - step: *run-unit-tests
+      - step: *clone-pipeline-files
+      - step: *scan-nonstrict
+      - step: *build-and-push-docker-image-prod
+      - step:
+          <<: *deploy-to-cloud-run-prod
+          name: Deploy to production
+          trigger: manual
+
+  custom:
+    deploy-cloud-scheduler-job-preprod:
+      - step: *clone-pipeline-files
+      - step:
+          name: Deploy Cloud Scheduler job Preprod
+          <<: *deploy-cloud-scheduler-job
+          deployment: preprod
+
+    pause-cloud-scheduler-job-preprod:
+      - step: *clone-pipeline-files
+      - step:
+          name: Pause Cloud Scheduler job Preprod
+          <<: *pause-cloud-scheduler-job
+          deployment: preprod
+
+    resume-cloud-scheduler-job-preprod:
+      - step: *clone-pipeline-files
+      - step:
+          name: Pause Cloud Scheduler job Preprod
+          <<: *resume-cloud-scheduler-job
+          deployment: preprod
+
+    run-cloud-scheduler-job-preprod:
+      - step: *clone-pipeline-files
+      - step:
+          name: Run Cloud Scheduler job Preprod
+          <<: *run-cloud-scheduler-job
+          deployment: preprod
+
+    deploy-cloud-scheduler-job-prod:
+      - step: *clone-pipeline-files
+      - step:
+          name: Deploy Cloud Scheduler job PROD
+          <<: *deploy-cloud-scheduler-job
+          deployment: production
+
+    pause-cloud-scheduler-job-prod:
+      - step: *clone-pipeline-files
+      - step:
+          name: Pause Cloud Scheduler job PROD
+          <<: *pause-cloud-scheduler-job
+          deployment: production
+
+    resume-cloud-scheduler-job-prod:
+      - step: *clone-pipeline-files
+      - step:
+          name: Pause Cloud Scheduler job PROD
+          <<: *resume-cloud-scheduler-job
+          deployment: production
+
+    run-cloud-scheduler-job-prod:
+      - step: *clone-pipeline-files
+      - step:
+          name: Run Cloud Scheduler job PROD
+          <<: *run-cloud-scheduler-job
+          deployment: production
